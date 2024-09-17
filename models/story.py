@@ -17,3 +17,7 @@ class Story(db.Model):
   url = db.Column(db.Text, nullable=False)
   created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
   updated_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+
+  # Relationship between a story and its comments
+
+  comments = db.relationship('Comment', cascade='all, delete', backref='story')

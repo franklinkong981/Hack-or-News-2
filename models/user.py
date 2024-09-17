@@ -19,3 +19,15 @@ class User(db.Model):
   profile_picture_url = db.Column(db.Text, default="tbd")
   password = db.Column(db.Text, nullable=False)
   created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+
+  # Relationships to link a user with the stories they've uploaded, their favorites, their bookmarks, and their comments.
+
+  stories = db.relationship('Story', cascade='all, delete', backref='user')
+  favorites = db.relationship('Favorite', cascade='all, delete', backref='user')
+  bookmarks = db.relationship('Bookmark', cascade='all, delete', backref='user')
+  comments = db.relationship('Comment', cascade='all, delete', backref='user')
+
+  # Relationships to link a user directly with their favorite stories and bookmarked stories.
+
+  favorite_stories = db.relationship('Story', secondary='favorites', backref='favorite_users')
+  bookmarked_stories = db.relationship('Story', secondary='bookmarks', backref='bookmark_users')
