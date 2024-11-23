@@ -20,6 +20,58 @@ class User(db.Model):
   password = db.Column(db.Text, nullable=False)
   created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
 
+  def format_created_at(self):
+    """Turn the created_at attribute stored in the class into a readable string format."""
+    return self.created_at.strftime("%A, %m%d%Y at %I:%M%p")
+  
+  @classmethod
+  def create_user(cls, username, email, profile_picture_url, password):
+    """Creates a new user, hashes the password, stores the new user information in the database, and returns the user."""
+
+    hashed_password = bcrypt.generate_password_hash(password).decode('UTF-8')
+    new_user = User(
+      username = username,
+      email = email,
+      profile_picture_url = profile_picture_url,
+      password = hashed_password
+    )
+
+    db.session.add(new_user)
+    return new_user
+  
+  @classmethod
+  def authenticate_user(cls, username, password):
+    """Attempts to log in the user. Returns user if successful, returns 0 if user not found in database, returns 1 if password doesn't match."""
+
+    user_logging_in = cls.query.filter_by(username=username).first()
+
+    if user_logging_in:
+      do_passwords_match = bcrypt.check_password_hash(user_logging_in.password, password)
+      if do_passwords_match:
+        return user_logging_in
+      return 1
+    
+    return 0
+  
+  @classmethod
+  def confirm_password(cls, id, password):
+    """Make sure the password inputted by the user matches the user's password in the database. Used for submitting forms like updating
+    profile info where user must enter password to finalize changes."""
+
+    logged_in_user = cls.query.get(id)
+
+    if logged_in_user:
+      return bcrypt.check_password_hash(logged_in_user.password, password)
+    return False
+  
+  @classmethod 
+  def update_password(cls, id, new_password):
+    """Updates the current logged in user's password and saves it in the database."""
+
+    logged_in_user = cls.query.get(id)
+    new_hashed_password = bcrypt.generate_password_hash(new_password).decode('UTF-8')
+    logged_in_user.password = new_hashed_password
+
   # Relationships to link a user with the stories they've uploaded, their favorites, their bookmarks, and their comments.
 
   stories = db.relationship('Story', cascade='all, delete', backref='user')

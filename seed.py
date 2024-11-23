@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = create_app('hackornews2')
-# print("The databas is: ", os.environ.get('DATABASE_URL'))
+# print("The database is: ", os.environ.get('DATABASE_URL'))
 connect_db(app)
 app.app_context().push()
 
