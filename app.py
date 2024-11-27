@@ -65,12 +65,21 @@ def create_app(db_name, testing=False):
   def remove_logged_out_user_from_session():
     del session[CURRENT_USER_ID]
 
-  ####################################################################################################### 
   # Homepage route
-  
   @app.route('/')
   def homepage():
     return render_template("home.html")
+
+
+  
+  #######################################################################################################
+  # 404 Page Not Found Error Handler
+
+  @app.errorhandler(404)
+  def page_not_found(e):
+    flash("404 Not Found: The URL you requested was not found", "danger")
+
+    return redirect("/")
 
   #######################################################################################################
   # Turn off all caching in Flask
