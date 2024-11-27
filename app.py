@@ -19,7 +19,7 @@ from models.connect import connect_db
 
 """This key will be in the Flask session and contain the logged in user's id once a user successfully logs in, will be removed once a user
 successfully logs out."""
-CURRENT_USER_KEY = "logged_in_user"
+CURRENT_USER_ID = "logged_in_user"
 
 def create_app(db_name, testing=False):
   """Creates an instance of the app to ensure separate production database and testing database, and that sample data inserted into 
@@ -48,6 +48,29 @@ def create_app(db_name, testing=False):
     app.config['SQLALCHEMY_ECHO'] = True
   
   # Routes and view functions for the application.
+
+  ######################################################################################################
+  # Functions for user authentication such as signing up, logging in, and logging out.
+
+  @app.before_request
+  def store_logged_in_user_to_g_object():
+    if CURRENT_USER_ID in session:
+      g.user = User.query.get_or_404(session[CURRENT_USER_ID])
+    else:
+      g.user = None
+  
+  def add_logged_in_user_to_session(logged_in_user):
+    session[CURRENT_USER_ID] = logged_in_user.id
+
+  def remove_logged_out_user_from_session():
+    del session[CURRENT_USER_ID]
+
+  ####################################################################################################### 
+  # Homepage route
+  
+  @app.route('/')
+  def homepage():
+    return render_template("home.html")
 
   #######################################################################################################
   # Turn off all caching in Flask
