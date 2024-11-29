@@ -8,6 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy import desc
 
 # import forms here
+from forms.authenticate_forms import SignupForm
 
 from models.init_db import db
 from models.user import User
@@ -64,6 +65,41 @@ def create_app(db_name, testing=False):
 
   def remove_logged_out_user_from_session():
     del session[CURRENT_USER_ID]
+  
+  @app.route('/signup', methods=['GET', 'POST'])
+  def handle_signup():
+    """GET: display user signup form.
+    POST Success: Create new User instance, add new user to database, redirect user to login form.
+    POST fail: Redirect to signup form with error message. """
+
+    if g.user:
+      flash("You already have an account and are signed in", "danger")
+      return redirect('/')
+    
+    signup_form = SignupForm()
+
+    if signup_form.validate_on_submit():
+      try:
+        new_user = User.create_user(
+          username = signup_form.username.data,
+          email = signup_form.email.data,
+          profile_picture_url = signup_form.profile_picture_url or User.profile_picture_url.default.arg,
+          password = signup_form.password.data
+        )
+        db.session.commit()
+
+        flash("Account successfully created. Please log in", "success")
+        return redirect('/login')
+      except IntegrityError as exc:
+        # Only poassible error not covered by WTForms validation is uniqueness of the email.
+        flash("The email you inputted already has an account associated with it", "danger")
+        print(f"ERROR: {exc}")
+      except:
+        # Issue with connecting to SQLAlchemy database.
+        flash("There was an error in connecting/accessing the database. Please try again later.", "danger")
+      # TODO: Validate URL (make sure it's valid and make sure it's URL corresponding to an image")
+    
+    return render_template('users/signup.html', form=signup_form)
 
   # Homepage route
   @app.route('/')

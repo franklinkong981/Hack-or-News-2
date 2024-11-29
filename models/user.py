@@ -16,7 +16,7 @@ class User(db.Model):
   id = db.Column(db.Integer, primary_key=True, autoincrement=True)
   username = db.Column(db.String(50), nullable=False)
   email = db.Column(db.Text, nullable=False, unique=True)
-  profile_picture_url = db.Column(db.Text, default="tbd")
+  profile_picture_url = db.Column(db.Text, default="/static/images/default-profile-picture.jpg")
   password = db.Column(db.Text, nullable=False)
   created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
 
