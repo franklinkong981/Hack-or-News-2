@@ -9,7 +9,7 @@ bcrypt = Bcrypt()
 
 class User(db.Model):
   """User in the app. A user can create an account by putting down a username (50 characters max), unique email, optional profile picture
-  url, and password ( at least 8 characters). Once logged in, a user can upload stories."""
+  url, and password (at least 8 characters). Once logged in, a user can upload stories."""
 
   __tablename__ = "users"
 
