@@ -133,13 +133,18 @@ def create_app(db_name, testing=False):
         print(f"ERROR: {exc}")
 
     return render_template('users/login.html', form=login_form)
+  
+ 
 
   ######################################################################################################
 
   # Homepage route
   @app.route('/')
   def homepage():
-    return render_template("home.html")
+    if g.user:
+      return render_template("logged-in-home.html")
+    else:
+      return render_template("logged-out-home.html")
 
   #######################################################################################################
   # 404 Page Not Found Error Handler
