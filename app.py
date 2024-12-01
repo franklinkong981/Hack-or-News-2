@@ -91,8 +91,8 @@ def create_app(db_name, testing=False):
         flash("Account successfully created. Please log in", "success")
         return redirect('/login')
       except IntegrityError as exc:
-        # Only poassible error not covered by WTForms validation is uniqueness of the email.
-        flash("The email you inputted already has an account associated with it", "danger")
+        # Only possible error not covered by WTForms validation is uniqueness of the username/email.
+        flash("The username and/or email you inputted already has an account associated with it", "danger")
         print(f"ERROR: {exc}")
       except:
         # Issue with connecting to SQLAlchemy database.
