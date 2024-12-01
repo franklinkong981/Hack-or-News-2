@@ -8,7 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy import desc
 
 # import forms here
-from forms.authenticate_forms import SignupForm
+from forms.authenticate_forms import SignupForm, LoginForm
 
 from models.init_db import db
 from models.user import User
@@ -94,20 +94,53 @@ def create_app(db_name, testing=False):
         # Only possible error not covered by WTForms validation is uniqueness of the username/email.
         flash("The username and/or email you inputted already has an account associated with it", "danger")
         print(f"ERROR: {exc}")
-      except:
-        # Issue with connecting to SQLAlchemy database.
-        flash("There was an error in connecting/accessing the database. Please try again later.", "danger")
-      # TODO: Validate URL (make sure it's valid and make sure it's URL corresponding to an image")
+      except Exception as exc:
+        # Internal issue.
+        flash("There was an internal server error. Please try again later.", "danger")
+        print(f"ERROR: {exc}")
     
     return render_template('users/signup.html', form=signup_form)
+  
+  @app.route('/login', methods=['GET', 'POST'])
+  def handle_login():
+    """GET: dsplay user login form.
+    POST Success: Redirect to signed in homepage.
+    POST fail: Redirect to login form with error message."""
+
+    if g.user:
+      flash("You already have an account and are logged in", "danger")
+      return redirect("/")
+    
+    login_form = LoginForm()
+
+    if login_form.validate_on_submit():
+      try:
+        user_logging_in = User.authenticate_user(login_form.username.data, login_form.password.data)
+
+        # User.authenticate_user returns 0 if username isn't found in database, 1 if passwords don't match.
+        if user_logging_in != 0 and user_logging_in != 1:
+          add_logged_in_user_to_session(user_logging_in)
+          flash(f"Hello, {user_logging_in.username}!", "success")
+          return redirect("/")
+        elif user_logging_in == 0:
+          flash("The username you entered is not associated with any account", "danger")
+        elif user_logging_in == 1:
+          flash("The password you entered is incorrect", "danger")
+        
+      except Exception as exc:
+        # Internal issue.
+        flash("There was an internal server error. Please try again later.", "danger")
+        print(f"ERROR: {exc}")
+
+    return render_template('users/login.html', form=login_form)
+
+  ######################################################################################################
 
   # Homepage route
   @app.route('/')
   def homepage():
     return render_template("home.html")
 
-
-  
   #######################################################################################################
   # 404 Page Not Found Error Handler
 
