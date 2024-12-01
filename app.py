@@ -134,7 +134,15 @@ def create_app(db_name, testing=False):
 
     return render_template('users/login.html', form=login_form)
   
- 
+  @app.route('/logout')
+  def handle_logout():
+    if not g.user:
+      flash("You are already signed out", "danger")
+    else:
+      remove_logged_out_user_from_session()
+      flash("Successfully logged out.", "success")
+    
+    return redirect("/")
 
   ######################################################################################################
 
