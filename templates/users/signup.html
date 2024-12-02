@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %} HackerorNews2 - Signup {% endblock %}
+
+{% block content %}
+
+  <div class="row justify-content-md-center">
+    <div class="form-section col-md-10 col-lg-8">
+      <h2 class="form-header display-1">Sign Up Today to Start Sharing News!</h2>
+      <form method="POST">
+        {{form.hidden_tag()}}
+
+        {% for field in form if field.widget.input_type != 'hidden' %}
+          <p>
+            {% for error in field.errors %}
+              <p class="form-text text-danger">{{error}}</p>
+            {% endfor %}
+
+            {{ field.label }}
+            {{ field(class_="form-control") }}
+          </p>
+        {% endfor %}
+
+        <div class="form-buttons">
+          <a class="btn btn-danger" href="{{url_for('homepage')}}">Cancel</a>
+          <button class="btn btn-success">Sign Up</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+{% endblock %}

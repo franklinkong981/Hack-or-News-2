@@ -4,6 +4,13 @@
 
 {% block content %}
 
-<h1>Hello {{g.user.username}}!</h1>
+<h1>Hello {{g.user.username}}! Welcome to Hack or News!</h1>
+
+<img src="{{g.user.profile_picture_url}}" alt="{{g.user.username}}'s profile picture"/>
+<p>Username: {{g.user.username}}</p>
+<p>Email: {{g.user.email}}</p>
+<p>Account Created At: {{g.user.format_created_at()}}</p>
+
+<a class="btn btn-dark" href="{{url_for('handle_logout')}}">Log Out</a>
 
 {% endblock %}
