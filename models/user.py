@@ -22,7 +22,7 @@ class User(db.Model):
 
   def format_created_at(self):
     """Turn the created_at attribute stored in the class into a readable string format."""
-    return self.created_at.strftime("%A, %m%d%Y at %I:%M%p")
+    return self.created_at.strftime("%A, %m/%d/%Y at %I:%M%p")
   
   @classmethod
   def create_user(cls, username, email, profile_picture_url, password):

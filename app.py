@@ -83,7 +83,7 @@ def create_app(db_name, testing=False):
         new_user = User.create_user(
           username = signup_form.username.data,
           email = signup_form.email.data,
-          profile_picture_url = signup_form.profile_picture_url or User.profile_picture_url.default.arg,
+          profile_picture_url = signup_form.profile_picture_url.data or User.profile_picture_url.default.arg,
           password = signup_form.password.data
         )
         db.session.commit()
