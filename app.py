@@ -91,8 +91,14 @@ def create_app(db_name, testing=False):
         flash("Account successfully created. Please log in", "success")
         return redirect('/login')
       except IntegrityError as exc:
-        # Only possible error not covered by WTForms validation is uniqueness of the username/email.
-        flash("The username and/or email you inputted already has an account associated with it", "danger")
+        # Only possible error not covered by WTForms validation is email/username isn't unique. Inspect error message to see which one it is.
+        # exic.orig gives the error message of the error, and repr converts it into a string.
+        if "username" in repr(exc.orig):
+          flash(f"There is already an account associated with the username {signup_form.username.data}", "danger")
+        elif "email" in repr(exc.orig):
+          flash(f"There is already an account associated with the email {signup_form.email.data}", "danger")
+        else:
+          flash("Something went wrong with the database in the signup process. Please try again later", "danger")
         print(f"ERROR: {exc}")
       except Exception as exc:
         # Internal issue.
